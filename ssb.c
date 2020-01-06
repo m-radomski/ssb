@@ -15,16 +15,15 @@
 #include "network.c" // TODO(matt): get rid of it/rewrite
 
 typedef struct dirent dirent;
+Display *display = 0;
 
 #define SEP " | "
 #define POWER_PATH "/sys/class/power_supply/"
 #define BUFFER_SIZE 128
 
-
 static int
 ssb_xset_root(const char *name)
 {
-	Display *display = XOpenDisplay(0);
 	if(!display)
 	{
 		fprintf(stderr, "Failed open a X window\n");
@@ -34,7 +33,7 @@ ssb_xset_root(const char *name)
 	int screen_id = XDefaultScreen(display);
 	Window root_window = XRootWindow(display, screen_id);
 	XStoreName(display, root_window, name);
-	XCloseDisplay(display);
+	XFlush(display);
 
 	return 0;
 }
@@ -193,6 +192,8 @@ ssb_name_add_audio(char *name)
 
 int main()
 {
+	display = XOpenDisplay(0);
+
 	while(1)
 	{
 		struct timespec start = { 0 };
@@ -201,8 +202,8 @@ int main()
 		char current_status[128] = { 0 };
 		int status_len = 0;
 
-		status_len += ssb_name_add_network(current_status);
-		strcat(current_status, SEP);
+		/* status_len += ssb_name_add_network(current_status); */
+		/* strcat(current_status, SEP); */
 
 		status_len += ssb_name_add_memory(current_status);
 		strcat(current_status, SEP);
