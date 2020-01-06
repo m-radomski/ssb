@@ -51,7 +51,6 @@ ssb_name_add_date(char *name)
 			  datef->tm_mday, datef->tm_mon + 1, datef->tm_year + 1900);
 
 	strcat(name, date_str);
-	strcat(name, SEP); // add a separator
 	return strlen(date_str);
 }
 
@@ -70,7 +69,6 @@ ssb_name_add_memory(char *name)
 		sprintf(ram_str, "%.01fMB/%.01fGB", ram_used, ram_total);
 
 	strcat(name, ram_str);
-	strcat(name, SEP); // add a separator
 	return strlen(ram_str);
 }
 
@@ -87,7 +85,6 @@ ssb_name_add_disk(char *name)
 	sprintf(disk_str, "%.01fGB", disk_free);
 
 	strcat(name, disk_str);
-	strcat(name, SEP);
 	return strlen(disk_str);
 	return 0;
 }
@@ -161,7 +158,6 @@ ssb_name_add_battery(char *name)
 			  working_bat, working_state, capacity / battery_count);
 
 	strcat(name, battery_str);
-	strcat(name, SEP);
 	return strlen(battery_str);
 }
 
@@ -169,7 +165,6 @@ static int
 ssb_name_add_network(char *name)
 {
 	int len = network_get(name);
-	strcat(name, SEP);
 
 	return len;
 }
@@ -193,7 +188,6 @@ ssb_name_add_audio(char *name)
 		*newline = '\0';
 
 	strcat(name, audio_str);
-	strcat(name, SEP);
 	return strlen(audio_str);
 }
 
@@ -208,10 +202,20 @@ int main()
 		int status_len = 0;
 
 		status_len += ssb_name_add_network(current_status);
+		strcat(current_status, SEP);
+
 		status_len += ssb_name_add_memory(current_status);
+		strcat(current_status, SEP);
+
 		status_len += ssb_name_add_disk(current_status);
+		strcat(current_status, SEP);
+
 		status_len += ssb_name_add_audio(current_status);
+		strcat(current_status, SEP);
+
 		status_len += ssb_name_add_battery(current_status);
+		strcat(current_status, SEP);
+
 		status_len += ssb_name_add_date(current_status);
 
 		ssb_xset_root(current_status);
