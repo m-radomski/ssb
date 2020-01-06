@@ -227,5 +227,7 @@ int main()
 		usleep(1000000 - (end.tv_nsec - start.tv_nsec) / 1000);
 	}
 
+	XCloseDisplay(display);
+
 	return 0;
 }
