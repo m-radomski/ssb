@@ -44,7 +44,7 @@ ssb_name_add_date(char *name)
 {
 	time_t date = time(0);
 	struct tm *datef = localtime(&date);
-	char date_str[32] = { 0 };
+	char date_str[128] = { 0 };
 
 	sprintf(date_str, "%.02d:%.02d:%.02d %.02d-%.02d-%d",
 			  datef->tm_hour, datef->tm_min, datef->tm_sec,
@@ -153,7 +153,7 @@ ssb_name_add_battery(char *name)
 	closedir(dir);
 	close(dir_fd);
 
-	char battery_str[16] = { 0 };
+	char battery_str[32] = { 0 };
 	sprintf(battery_str, "%d: %c@%d%%",
 			  working_bat, working_state, capacity / battery_count);
 
