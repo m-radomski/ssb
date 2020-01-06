@@ -8,6 +8,7 @@
 #include <dirent.h>
 #include <sys/sysinfo.h>
 #include <sys/vfs.h>
+#include <sys/time.h>
 
 #include <X11/Xlib.h>
 
@@ -200,6 +201,9 @@ int main()
 {
 	while(1)
 	{
+		struct timespec start = { 0 };
+		clock_gettime(CLOCK_REALTIME, &start);
+
 		char current_status[128] = { 0 };
 		int status_len = 0;
 
@@ -211,7 +215,11 @@ int main()
 		status_len += ssb_name_add_date(current_status);
 
 		ssb_xset_root(current_status);
-		sleep(1);
+
+		struct timespec end = { 0 };
+		clock_gettime(CLOCK_REALTIME, &end);
+
+		usleep(1000000 - (end.tv_nsec - start.tv_nsec) / 1000);
 	}
 
 	return 0;
