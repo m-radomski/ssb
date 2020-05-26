@@ -1,8 +1,8 @@
-CFLAGS=-Wall -Wextra -pedantic
-LFLAGS=-lX11
+CFLAGS=-Wall -Wextra -pedantic -Wno-unused-parameter
+LFLAGS=-lX11 -lpulse -pthread
 
 debug:
-	$(CC) -g -o ssb ssb.c $(CFLAGS) $(LFLAGS)
+	$(CC) -g -o ssbd ssb.c $(CFLAGS) $(LFLAGS)
 
 fast:
 	$(CC) -o ssb ssb.c -O2 $(CFLAGS) $(LFLAGS)
