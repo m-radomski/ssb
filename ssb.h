@@ -84,7 +84,7 @@ static int ssb_xset_root();
 block_cfg config[] = {
 	{ssb_get_mail, 0, MIN_IN_MS(5)},
 	{ssb_get_network, 0, SEC_IN_MS(1)},
-	{ssb_get_weather_wrapper, 0, SEC_IN_MS(1)},
+	{ssb_get_weather_wrapper, 0, MIN_IN_MS(5)},
 	{ssb_get_memory, 0, SEC_IN_MS(1)},
 	{ssb_get_disk, 0, SEC_IN_MS(5)},
 #ifdef SND_PULSEAUDIO

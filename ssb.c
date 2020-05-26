@@ -475,7 +475,7 @@ ssb_get_network()
 static int 
 ssb_get_mail()
 {
-	// Dont hard code it in
+	//TODO(matt): Dont hard code it in
 	int dirfd = open("/home/mateusz/private/mail/agh/INBOX/new/", O_RDONLY);
 	if(dirfd == -1)
 		return 0;
@@ -702,6 +702,7 @@ ssb_run()
 				  (float)(end.tv_nsec - start.tv_nsec) / 1000);
 #endif
 
+		assert(((1000*1000/60) - (end.tv_nsec - start.tv_nsec) / 1000) > 0);
 		usleep((1000*1000/60) - (end.tv_nsec - start.tv_nsec) / 1000);
 	}
 
