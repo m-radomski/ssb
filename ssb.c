@@ -33,8 +33,6 @@ Display *display = 0;
 #define SIPREFIX "BKMGP"
 #define DEBUG 0
 
-FILE *log_fd = 0x0;
-
 // programs globals
 block *blocks = 0;
 
@@ -83,10 +81,10 @@ ssb_init_audio()
 
 	pa_threaded_mainloop_lock(pulse.mainloop);
 	if(pa_threaded_mainloop_start(pulse.mainloop))
-		fprintf(log_fd, "Failed to start the pulseaudio mainloop");
+		printf("Failed to start the pulseaudio mainloop");
 
 	if(pa_context_connect(pulse.context, 0, flags, 0))
-		fprintf(log_fd, "Failed to connect to pulseaudio");
+		printf("Failed to connect to pulseaudio");
 	pa_threaded_mainloop_unlock(pulse.mainloop);
 
 	//TODO(matt): make it so that when no pulseaudio is working the bar is not cucked
@@ -333,7 +331,7 @@ ssb_get_network()
 	int dirfd = open(INTERFACE_PATH, O_RDONLY);
 	if(dirfd == -1)
 	{
-		fprintf(log_fd, "%s", strerror(errno));
+		printf("%s", strerror(errno));
 		return -1;
 	}
 
@@ -344,7 +342,7 @@ ssb_get_network()
 	{
 		close(dirfd);
 
-		fprintf(log_fd, "%s", strerror(errno));
+		printf("%s", strerror(errno));
 		return -1;
 	}
 
@@ -357,7 +355,7 @@ ssb_get_network()
 
 		if(!file && errno != 0)
 		{
-			fprintf(log_fd, "%s", strerror(errno));
+			printf("%s", strerror(errno));
 			return -1;
 		}
 	}
@@ -370,7 +368,7 @@ ssb_get_network()
 	{
 		if(!file && errno != 0)
 		{
-			fprintf(log_fd, "%s", strerror(errno));
+			printf("%s", strerror(errno));
 			return -1;
 		}
 
@@ -381,7 +379,7 @@ ssb_get_network()
 		int fd = open(path, O_RDONLY);
 		if(fd == -1)
 		{
-			fprintf(log_fd, "%s: %s", file->d_name, strerror(errno));
+			printf("%s: %s", file->d_name, strerror(errno));
 			continue;
 		}
 
@@ -389,7 +387,7 @@ ssb_get_network()
 		if(read(fd, content, sizeof(content)) == -1)
 		{
 			close(fd);
-			fprintf(log_fd, "%s: %s", file->d_name, strerror(errno));
+			printf("%s: %s", file->d_name, strerror(errno));
 			continue;
 		}
 
@@ -405,10 +403,10 @@ ssb_get_network()
 
 			int fd = open(path, O_RDONLY);
 			if(fd == -1)
-				fprintf(log_fd, "%s: %s", file->d_name, strerror(errno));
+				printf("%s: %s", file->d_name, strerror(errno));
 
 			if(read(fd, path, sizeof(path)) == -1)
-				fprintf(log_fd, "%s: %s", file->d_name, strerror(errno));
+				printf("%s: %s", file->d_name, strerror(errno));
 
 			close(fd);
 
@@ -421,7 +419,7 @@ ssb_get_network()
 
 			fd = open(path, O_RDONLY);
 			if(fd == -1)
-				fprintf(log_fd, "Failed to open rx_bytes on %s\n", file->d_name);
+				printf("Failed to open rx_bytes on %s\n", file->d_name);
 
 			read(fd, path, sizeof(path));
 			close(fd);
@@ -533,7 +531,7 @@ ssb_get_weather(void *arg)
 	// resolve dns name
 	if(getaddrinfo("wttr.in", "80", &hints, &server) != 0)
 	{
-		fprintf(log_fd, "Error failed to resolve DNS name\n");
+		printf("Error failed to resolve DNS name\n");
 		return 1;
 	}
 
@@ -543,7 +541,7 @@ ssb_get_weather(void *arg)
 							server->ai_protocol);
 
 	if(setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &(int){ 1 }, sizeof(int)))
-		fprintf(log_fd, "Failed to unbind socket\n");
+		printf("Failed to unbind socket\n");
 
 	// connect to server
 	connect(sock, server->ai_addr, server->ai_addrlen);
@@ -562,7 +560,7 @@ ssb_get_weather(void *arg)
 
 	if(msg == 0x0)
 	{
-		fprintf(log_fd, "Failed to allocate memory\n");
+		printf("Failed to allocate memory\n");
 		code = 1;
 		goto err;
 	}
@@ -574,7 +572,7 @@ ssb_get_weather(void *arg)
 	}
 	if(msg == 0x0)
 	{
-		fprintf(log_fd, "Failed to recive the response from server\n");
+		printf("Failed to recive the response from server\n");
 		code = 1;
 		goto err;
 	}
@@ -584,7 +582,7 @@ ssb_get_weather(void *arg)
 	msg = strstr(msg, footer);
 	if(msg == 0x0)
 	{
-		fprintf(log_fd, "Failed to find the HTTP footer\n");
+		printf("Failed to find the HTTP footer\n");
 		code = 1;
 		goto err;
 	}
@@ -594,14 +592,14 @@ ssb_get_weather(void *arg)
 	char *line1 = strtok(msg, "\n");
 	if(line1 == 0x0)
 	{
-		fprintf(log_fd, "The HTTP respone is garbeled in some way\n");
+		printf("The HTTP respone is garbeled in some way\n");
 		code = 1;
 		goto err;
 	}
 	char *line2 = strtok(0, "\n");
 	if(line2 == 0x0)
 	{
-		fprintf(log_fd, "The HTTP respone is garbeled in some way\n");
+		printf("The HTTP respone is garbeled in some way\n");
 		code = 1;
 		goto err;
 	}
@@ -613,7 +611,7 @@ ssb_get_weather(void *arg)
 	}
 	else
 	{
-		fprintf(log_fd, "Failed with the weather\n");
+		printf("Failed with the weather\n");
 		code = 1;
 		goto err;
 	}
@@ -649,7 +647,7 @@ ssb_init()
 {
 	if((display = XOpenDisplay(0)) == 0)
 	{
-		fprintf(log_fd, "Failed to open XDisplay\n");
+		printf("Failed to open XDisplay\n");
 		return -1;
 	}
 
@@ -666,7 +664,7 @@ ssb_run()
 		struct timespec start = { 0 };
 		if(clock_gettime(CLOCK_REALTIME, &start) != 0)
 		{
-			fprintf(log_fd, "%s", strerror(errno));
+			printf("%s", strerror(errno));
 			return -1;
 		}
 
@@ -693,12 +691,12 @@ ssb_run()
 		struct timespec end = { 0 };
 		if(clock_gettime(CLOCK_REALTIME, &end) != 0)
 		{
-			fprintf(log_fd, "%s", strerror(errno));
+			printf("%s", strerror(errno));
 			return -1;
 		}
 
 #if DEBUG
-		fprintf(log_fd, "The loop took %fms\n",
+		printf("The loop took %fms\n",
 				  (float)(end.tv_nsec - start.tv_nsec) / 1000);
 #endif
 
@@ -711,8 +709,6 @@ ssb_run()
 
 int main()
 {
-	log_fd = stderr;
-
 	if(ssb_init() != 0)
 	{
 		printf("Failed to initialze\n");
