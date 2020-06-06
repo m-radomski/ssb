@@ -65,7 +65,7 @@ static int ssb_get_disk();
 static int ssb_get_battery();
 static int ssb_get_network();
 static int ssb_get_mail();
-#ifdef SND_DONE
+#ifdef SND_PULSEAUDIO
 static int ssb_get_audio();
 #endif
 static int ssb_get_weather_wrapper();
