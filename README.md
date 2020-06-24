@@ -1,4 +1,4 @@
-#Simple Statusbar
+# Simple Statusbar
 
 Quick and simple status bar that is aimed at DWM.
 In the basic state provides information about:
