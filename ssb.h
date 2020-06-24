@@ -53,6 +53,7 @@ static void ssb_init_audio();
 #endif
 
 static int ssb_memory_get_number(char *meminfo, char *field);
+static int ssb_mail_get_new(char *dir_name, char *dir_mail);
 static void ssb_blocks_init();
 static int ssb_get_weather(void *arg);
 

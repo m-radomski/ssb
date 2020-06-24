@@ -470,11 +470,15 @@ ssb_get_network()
 	return 0;
 }
 
-static int 
-ssb_get_mail()
+static int
+ssb_mail_get_new(char *dir_name, char *dir_mail)
 {
-	//TODO(matt): Dont hard code it in
-	int dirfd = open("/home/mateusz/private/mail/agh/INBOX/new/", O_RDONLY);
+	char path[256] = { 0 };
+	strcat(path, dir_mail);
+	strcat(path, dir_name);
+	strcat(path, "/INBOX/new");
+
+	int dirfd = open(path, O_RDONLY);
 	if(dirfd == -1)
 		return 0;
 
@@ -496,11 +500,48 @@ ssb_get_mail()
 	closedir(dir);
 	close(dirfd);
 
+	return count;
+}
+
+static int 
+ssb_get_mail()
+{
+	char *path = getenv("MAIL_DIR");
+	if(path == 0x0)
+	{
+		printf("There is no \"MAIL_DIR\" environment variable!\n");
+		return 1;
+	}
+
+	int dirfd = open(path, O_RDONLY);
+	if(dirfd == -1)
+		return 1;
+
+	DIR *dir = fdopendir(dirfd);
+	if(!dir)
+		return 0;
+
+	dirent *f = 0;
 	block *blk = ssb_get_block_by_func(ssb_get_mail);
-	if(count == 0)
-		blk->str[0] = '\0';
-	else
-		sprintf(blk->str, "%d new mails", count);
+	char *head = blk->str;
+	while((f = readdir(dir)) != 0)
+	{
+		if(f->d_type != DT_DIR) { continue; }
+
+		int mails = ssb_mail_get_new(f->d_name, path);
+
+		if(mails == 0)
+			head[0] = '\0';
+		else
+		{
+			sprintf(head, "%d in %s ", mails, f->d_name);
+			head += strlen(head);
+		}
+	}
+
+	int len = strlen(blk->str);
+	if(len != 0)
+		blk->str[len-1] = '\0'; // Remove the last space
 
 	return 0;
 }
