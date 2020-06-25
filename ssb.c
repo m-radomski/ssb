@@ -539,6 +539,9 @@ ssb_get_mail()
 		}
 	}
 
+	closedir(dir);
+	close(dirfd);
+
 	int len = strlen(blk->str);
 	if(len != 0)
 		blk->str[len-1] = '\0'; // Remove the last space
