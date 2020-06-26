@@ -8,7 +8,6 @@
 #include <netdb.h>
 #include <threads.h>
 #include <errno.h>
-#include <assert.h>
 
 #include <fcntl.h>
 #include <dirent.h>
@@ -744,8 +743,11 @@ ssb_run()
 				  (float)(end.tv_nsec - start.tv_nsec) / 1000);
 #endif
 
-		assert(((1000*1000/60) - (end.tv_nsec - start.tv_nsec) / 1000) > 0);
-		usleep((1000*1000/60) - (end.tv_nsec - start.tv_nsec) / 1000);
+		int dt = (1000*1000/60) - (end.tv_nsec - start.tv_nsec) / 1000;
+
+		// Sometimes the clock does weird things, just don't crash immediatley
+		if(dt > 0)
+			usleep(dt);
 	}
 
 	return 0;
