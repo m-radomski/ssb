@@ -664,7 +664,11 @@ err:;
 
 	if(code == 0)
 	{
-		sprintf(blk->str, "%s (%s)", line1 + 15, line2 + 15);
+		int off1 = 0, off2 = 0;
+		while(!isalpha(line1[off1])) { off1++; }
+		while(!isdigit(line2[off2])) { off2++; }
+
+		sprintf(blk->str, "%s (%s)", line1 + off1, line2 + off2);
 	}
 	else
 	{
